@@ -3,6 +3,10 @@ import OrbitControls from '../OrbitControls/OrbitControls';
 import { SceneObject } from './SceneObject';
 
 /* tslint:disable */
+/**
+ * Primary controller for a Three.js scene. SceneManager does renders to a
+ * canvas element in-browser.
+ */
 export class SceneManager {
 
     private canvas: any;
@@ -31,7 +35,7 @@ export class SceneManager {
     }
 
     private buildCamera() {
-        return new THREE.PerspectiveCamera(60, 2, 1, 100000);
+        return new THREE.PerspectiveCamera(100, 2, 1, 100000);
     }
 
     private resizeCanvasToDisplaySize() {

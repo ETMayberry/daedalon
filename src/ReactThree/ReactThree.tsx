@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import './ReactThree.css';
 import { SceneManager } from './SceneManager';
 import { SceneObject } from './SceneObject';
+import UIManager from './UI/UIManager';
 
 /* tslint:disable */
 /**
@@ -25,36 +26,13 @@ export class ReactThree extends React.Component<{}, {}> {
     public render() {
         return (
             <div className="react-three-container">
-                <button className="btn btn-primary" onClick={this.doThing}>Do the Thing</button>
-                <canvas className="react-three-canvas" ref={el => this.canvasRef = el} />
+                <button className="btn btn-primary position-absolute" onClick={this.doThing}>Do the Thing</button>
+                <UIManager />
+                <canvas className="react-three-canvas"
+                    ref={el => this.canvasRef = el} />
             </div>
         );
     };
-
-    public doThing() {
-        console.log("doing a thing...");
-        const obj = new SceneObject(
-            new THREE.MeshNormalMaterial(),
-            new THREE.SphereGeometry(10, 100, 10)
-        );
-        obj.updateFunction = (object: SceneObject, delta: number) => {
-            object.mesh.rotation.x += 0.01;
-            object.mesh.rotation.y += 0.01;
-        };
-        this.scene!.addSceneObject(obj);
-
-        const obj2 = new SceneObject(
-            new THREE.MeshNormalMaterial(),
-            new THREE.CubeGeometry(10, 15, 5, 1, 1, 1)
-        );
-        obj2.updateFunction = (object: SceneObject, delta: number) => {
-            object.mesh.rotation.x += 0.01;
-            object.mesh.rotation.y += 0.01;
-        };
-        obj2.mesh.position.setX(-15);
-        // this.scene!.addSceneObject(obj2);
-        obj.addChild(obj2);
-    }
 
     /**
      * Called when React finishes creating this object. We wait for this time to do anything
@@ -102,6 +80,54 @@ export class ReactThree extends React.Component<{}, {}> {
     public animate() {
         this.scene!.update();
         requestAnimationFrame(this.animate.bind(this));
+    }
+
+    // vvvvvvvvvvvvvvvv TEST TEST TEST vvvvvvvvvvvvvvvv
+    i = 0;
+    public doThing() {
+        console.log("doing a thing...");
+        // const obj = new SceneObject(
+        //     new THREE.MeshNormalMaterial(),
+        //     new THREE.SphereGeometry(10, 100, 10)
+        // );
+        // obj.updateFunction = (object: SceneObject, delta: number) => {
+        //     object.mesh.rotation.x += 0.01;
+        //     object.mesh.rotation.y += 0.01;
+        // };
+        // this.scene!.addSceneObject(obj);
+
+        // const obj2 = new SceneObject(
+        //     new THREE.MeshNormalMaterial(),
+        //     new THREE.CubeGeometry(10, 15, 5, 1, 1, 1)
+        // );
+        // obj2.updateFunction = (object: SceneObject, delta: number) => {
+        //     object.mesh.rotation.x += 0.01;
+        //     object.mesh.rotation.y += 0.01;
+        // };
+        // obj2.mesh.position.setX(-15 - this.i++);
+        // obj.addChild(obj2);
+
+        const textureLoader = new THREE.TextureLoader();
+        const skyboxMat = new THREE.MeshBasicMaterial();
+        textureLoader.setCrossOrigin('anonymous');
+        textureLoader.load("/images/Space-Nebula-Texture.png",
+            (t) => {
+                skyboxMat.map = t;
+            },
+            undefined,
+            (err) => {
+                console.error('error', err);
+            });
+
+        skyboxMat.side = THREE.BackSide;
+        let skyboxGeo = new THREE.SphereGeometry(1024, 128, 128);
+        let skyboxMesh = new THREE.Mesh(skyboxGeo, skyboxMat);
+        skyboxMesh.rotation.y = Math.PI;
+        const skybox = new SceneObject(
+            skyboxMat,
+            skyboxGeo
+        );
+        this.scene!.addSceneObject(skybox);
     }
 
 }
